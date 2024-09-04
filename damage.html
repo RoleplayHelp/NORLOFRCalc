@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máy Tính Damage</title>
+    <link rel="stylesheet" href="damage.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Máy Tính Damage</h1>
+        <div class="tab-container">
+            <div class="tab-header">
+                <button class="tab-button active" data-tab="stat-buff">Tính toán chỉ số có buff/debuff</button>
+                <button class="tab-button" data-tab="damage-taken">Tính toán sát thương nhận vào</button>
+            </div>
+            <div class="tab-content">
+                <div id="stat-buff" class="tab-pane active">
+                    <div class="sub-tab-header">
+                        <button class="sub-tab-button active" data-sub-tab="stat">Tính chỉ số</button>
+                        <button class="sub-tab-button" data-sub-tab="skill-damage">Tính sát thương gây ra</button>
+                    </div>
+                    <div id="stat" class="sub-tab-pane active">
+                        <h2>Tính toán chỉ số</h2>
+                        <div class="input-group">
+                            <label for="base-stat">Chỉ số ban đầu:</label>
+                            <input type="number" id="base-stat" min="0">
+                        </div>
+                    </div>
+                    <div id="skill-damage" class="sub-tab-pane">
+                        <h2>Tính toán sát thương gây ra</h2>
+                        <div class="input-group">
+                            <label for="base-damage">Sát thương cơ bản:</label>
+                            <input type="number" id="base-damage" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label for="skill-multiplier">Hệ số skill (%):</label>
+                            <input type="number" id="skill-multiplier" min="0" step="0.1">
+                        </div>
+                    </div>
+                    <div class="buff-debuff-section">
+                        <h3>Buff/Debuff</h3>
+                        <div class="buff-group">
+                            <div class="input-group">
+                                <label for="buff-percentage">Buff/Debuff %:</label>
+                                <input type="number" id="buff-percentage" step="0.1">
+                                <button id="add-percentage-buff">Thêm</button>
+                            </div>
+                            <div id="percentage-buff-list" class="buff-list"></div>
+                        </div>
+                        <div class="buff-group">
+                            <div class="input-group">
+                                <label for="buff-fixed">Buff/Debuff cố định:</label>
+                                <input type="number" id="buff-fixed" step="1">
+                                <button id="add-fixed-buff">Thêm</button>
+                            </div>
+                            <div id="fixed-buff-list" class="buff-list"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="damage-taken" class="tab-pane">
+                    <h2>Tính toán sát thương nhận vào</h2>
+                    <div class="input-group">
+                        <label for="incoming-damage">Sát thương gốc:</label>
+                        <input type="number" id="incoming-damage" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="defense">Phòng thủ:</label>
+                        <input type="number" id="defense" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="damage-reduction">Giảm sát thương (%):</label>
+                        <input type="number" id="damage-reduction" min="0" max="100" step="0.1">
+                    </div>
+                </div>
+            </div>
+		<div class="button-group">
+            <button id="calculate">Tính Toán</button>
+            <button id="clear-data">Xóa toàn bộ dữ liệu đã nhập</button>
+        </div>
+        </div>
+        <div id="result" class="result"></div>
+    </div>
+    <script src="damage.js"></script>
+</body>
+</html>
