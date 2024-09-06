@@ -2,6 +2,7 @@ class DamageCalculator {
     constructor() {
         this.percentageBuffs = [];
         this.fixedBuffs = [];
+        this.physicalShields = [];
     }
 
     addPercentageBuff(value) {
@@ -20,6 +21,14 @@ class DamageCalculator {
         this.fixedBuffs.splice(index, 1);
     }
 
+    addPhysicalShield(shield) {
+        this.physicalShields.push(shield);
+    }
+
+    removePhysicalShield(index) {
+        this.physicalShields.splice(index, 1);
+    }
+
     calculateStat(baseStat) {
         let result = baseStat;
         for (let buff of this.percentageBuffs) {
@@ -35,21 +44,59 @@ class DamageCalculator {
         return this.calculateStat(damage);
     }
 
-    calculateDamageTaken(incomingDamage, defense, damageReduction) {
-        const damageAfterDefense = Math.max(0, incomingDamage - defense);
-        const finalDamage = damageAfterDefense * (1 - (damageReduction / 100));
-        return Math.max(0, finalDamage);
+    calculateDamageTaken(damageInfo, defenderInfo) {
+        let { incomingDamage, defPierce, piercingDamage, trueDamage, fatalDamage, constantDamage } = damageInfo;
+        let { defense, fakeHP, damageReduction } = defenderInfo;
+
+        // Áp dụng giảm sát thương
+        if (!trueDamage && !fatalDamage) {
+            incomingDamage *= (1 - damageReduction / 100);
+        }
+
+        let remainingDamage = incomingDamage;
+
+        // Xử lý khiên vật lý
+        if (!piercingDamage && !fatalDamage) {
+            for (let shield of this.physicalShields) {
+                if (constantDamage && shield.durability <= remainingDamage) {
+                    continue; // Bỏ qua khiên nếu CDD và độ bền khiên <= sát thương
+                }
+                let damageToShield = remainingDamage * (1 - shield.damageReduction / 100);
+                damageToShield = Math.max(0, damageToShield - shield.fakeHP - shield.def);
+                let absorbed = Math.min(shield.durability, damageToShield);
+                remainingDamage -= absorbed;
+                shield.durability -= absorbed;
+                if (remainingDamage <= 0) break;
+            }
+            // Lọc bỏ các khiên đã hết độ bền
+            this.physicalShields = this.physicalShields.filter(shield => shield.durability > 0);
+        }
+
+        // Áp dụng Fake HP
+        if (!fatalDamage && fakeHP > 0) {
+            let absorbed = Math.min(fakeHP, remainingDamage);
+            remainingDamage -= absorbed;
+        }
+
+        // Áp dụng Def
+        if (!defPierce && !fatalDamage) {
+            remainingDamage = Math.max(0, remainingDamage - defense);
+        }
+
+        return Math.max(0, remainingDamage);
     }
 
     loadState(state) {
         this.percentageBuffs = state.percentageBuffs || [];
         this.fixedBuffs = state.fixedBuffs || [];
+        this.physicalShields = state.physicalShields || [];
     }
 
     getState() {
         return {
             percentageBuffs: this.percentageBuffs,
-            fixedBuffs: this.fixedBuffs
+            fixedBuffs: this.fixedBuffs,
+            physicalShields: this.physicalShields
         };
     }
 }
@@ -63,42 +110,69 @@ class UIManager {
     }
 
     initElements() {
-        this.tabButtons = document.querySelectorAll('.tab-button');
-        this.tabPanes = document.querySelectorAll('.tab-pane');
-        this.subTabButtons = document.querySelectorAll('.sub-tab-button');
-        this.subTabPanes = document.querySelectorAll('.sub-tab-pane');
+        // Các elements cho phần tính toán chỉ số
         this.baseStatInput = document.getElementById('base-stat');
         this.baseDamageInput = document.getElementById('base-damage');
         this.skillMultiplierInput = document.getElementById('skill-multiplier');
-        this.incomingDamageInput = document.getElementById('incoming-damage');
-        this.defenseInput = document.getElementById('defense');
-        this.damageReductionInput = document.getElementById('damage-reduction');
         this.buffPercentageInput = document.getElementById('buff-percentage');
         this.buffFixedInput = document.getElementById('buff-fixed');
         this.addPercentageBuffButton = document.getElementById('add-percentage-buff');
         this.addFixedBuffButton = document.getElementById('add-fixed-buff');
         this.percentageBuffList = document.getElementById('percentage-buff-list');
         this.fixedBuffList = document.getElementById('fixed-buff-list');
+
+        // Các elements cho phần tính toán sát thương nhận vào
+        this.incomingDamageInput = document.getElementById('incoming-damage');
+        this.defPierceCheckbox = document.getElementById('def-pierce');
+        this.piercingDamageCheckbox = document.getElementById('piercing-damage');
+        this.trueDamageCheckbox = document.getElementById('true-damage');
+        this.fatalDamageCheckbox = document.getElementById('fatal-damage');
+        this.constantDamageCheckbox = document.getElementById('constant-damage');
+        this.defenseInput = document.getElementById('defense');
+        this.fakeHPInput = document.getElementById('fake-hp');
+        this.damageReductionInput = document.getElementById('damage-reduction');
+        this.shieldDurabilityInput = document.getElementById('shield-durability');
+        this.shieldDefInput = document.getElementById('shield-def');
+        this.shieldFakeHPInput = document.getElementById('shield-fake-hp');
+        this.shieldDamageReductionInput = document.getElementById('shield-damage-reduction');
+        this.addShieldButton = document.getElementById('add-shield');
+        this.shieldList = document.getElementById('shield-list');
+
         this.calculateButton = document.getElementById('calculate');
+        this.clearDataButton = document.getElementById('clear-data');
         this.resultDiv = document.getElementById('result');
-		this.clearDataButton = document.getElementById('clear-data');
+
+        // Tab elements
+        this.tabButtons = document.querySelectorAll('.tab-button');
+        this.tabPanes = document.querySelectorAll('.tab-pane');
+        this.subTabButtons = document.querySelectorAll('.sub-tab-button');
+        this.subTabPanes = document.querySelectorAll('.sub-tab-pane');
     }
 
     bindEvents() {
+        this.addPercentageBuffButton.addEventListener('click', () => this.addBuff('percentage'));
+        this.addFixedBuffButton.addEventListener('click', () => this.addBuff('fixed'));
+        this.addShieldButton.addEventListener('click', () => this.addShield());
+        this.calculateButton.addEventListener('click', () => this.calculate());
+        this.clearDataButton.addEventListener('click', () => this.clearAllData());
+
         this.tabButtons.forEach(button => {
             button.addEventListener('click', () => this.switchTab(button));
         });
         this.subTabButtons.forEach(button => {
             button.addEventListener('click', () => this.switchSubTab(button));
         });
-        this.addPercentageBuffButton.addEventListener('click', () => this.addBuff('percentage'));
-        this.addFixedBuffButton.addEventListener('click', () => this.addBuff('fixed'));
-        this.calculateButton.addEventListener('click', () => this.calculate());
-		this.clearDataButton.addEventListener('click', () => this.clearAllData());
 
-        const inputs = document.querySelectorAll('input[type="number"]');
-        inputs.forEach(input => {
-            input.addEventListener('input', () => this.saveState());
+        // Prevent selecting both Piercing Damage and Fatal Damage
+        this.piercingDamageCheckbox.addEventListener('change', () => {
+            if (this.piercingDamageCheckbox.checked) {
+                this.fatalDamageCheckbox.checked = false;
+            }
+        });
+        this.fatalDamageCheckbox.addEventListener('change', () => {
+            if (this.fatalDamageCheckbox.checked) {
+                this.piercingDamageCheckbox.checked = false;
+            }
         });
     }
 
@@ -108,7 +182,6 @@ class UIManager {
         clickedButton.classList.add('active');
         const tabId = clickedButton.getAttribute('data-tab');
         document.getElementById(tabId).classList.add('active');
-        this.saveState();
     }
 
     switchSubTab(clickedButton) {
@@ -117,7 +190,6 @@ class UIManager {
         clickedButton.classList.add('active');
         const subTabId = clickedButton.getAttribute('data-sub-tab');
         document.getElementById(subTabId).classList.add('active');
-        this.saveState();
     }
 
     addBuff(type) {
@@ -163,12 +235,48 @@ class UIManager {
         this.saveState();
     }
 
+    addShield() {
+        const durability = parseFloat(this.shieldDurabilityInput.value);
+        const def = parseFloat(this.shieldDefInput.value) || 0;
+        const fakeHP = parseFloat(this.shieldFakeHPInput.value) || 0;
+        const damageReduction = parseFloat(this.shieldDamageReductionInput.value) || 0;
+
+        if (isNaN(durability)) return;
+
+        const shield = { durability, def, fakeHP, damageReduction };
+        this.calculator.addPhysicalShield(shield);
+
+        const shieldElement = document.createElement('div');
+        shieldElement.classList.add('shield-item');
+        shieldElement.textContent = `Độ bền: ${durability}, Def: ${def}, Máu ảo: ${fakeHP}, Giảm damage: ${damageReduction}%`;
+
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'X';
+        removeButton.addEventListener('click', () => this.removeShield(shieldElement));
+        shieldElement.appendChild(removeButton);
+
+        this.shieldList.appendChild(shieldElement);
+
+        this.shieldDurabilityInput.value = '';
+        this.shieldDefInput.value = '';
+        this.shieldFakeHPInput.value = '';
+        this.shieldDamageReductionInput.value = '';
+        this.saveState();
+    }
+
+    removeShield(element) {
+        const index = Array.from(this.shieldList.children).indexOf(element);
+        this.shieldList.removeChild(element);
+        this.calculator.removePhysicalShield(index);
+        this.saveState();
+    }
+
     calculate() {
         const activeTab = document.querySelector('.tab-pane.active').id;
-        let result;
 
         if (activeTab === 'stat-buff') {
             const activeSubTab = document.querySelector('.sub-tab-pane.active').id;
+            let result;
             if (activeSubTab === 'stat') {
                 const baseStat = parseFloat(this.baseStatInput.value) || 0;
                 result = this.calculator.calculateStat(baseStat);
@@ -180,14 +288,51 @@ class UIManager {
                 this.resultDiv.textContent = `Kết quả tính toán sát thương gây ra: ${result.toFixed(2)}`;
             }
         } else {
-            const incomingDamage = parseFloat(this.incomingDamageInput.value) || 0;
-            const defense = parseFloat(this.defenseInput.value) || 0;
-            const damageReduction = parseFloat(this.damageReductionInput.value) || 0;
-            result = this.calculator.calculateDamageTaken(incomingDamage, defense, damageReduction);
-            this.resultDiv.textContent = `Sát thương nhận vào: ${result.toFixed(2)}`;
+            const damageInfo = {
+                incomingDamage: parseFloat(this.incomingDamageInput.value) || 0,
+                defPierce: this.defPierceCheckbox.checked,
+                piercingDamage: this.piercingDamageCheckbox.checked,
+                trueDamage: this.trueDamageCheckbox.checked,
+                fatalDamage: this.fatalDamageCheckbox.checked,
+                constantDamage: this.constantDamageCheckbox.checked
+            };
+            const defenderInfo = {
+                defense: parseFloat(this.defenseInput.value) || 0,
+                fakeHP: parseFloat(this.fakeHPInput.value) || 0,
+                damageReduction: parseFloat(this.damageReductionInput.value) || 0
+            };
+            const result = this.calculator.calculateDamageTaken(damageInfo, defenderInfo);
+            this.resultDiv.textContent = `Sát thương cuối cùng: ${result.toFixed(2)}`;
         }
-
         this.saveState();
+    }
+
+    clearAllData() {
+        // Clear all input fields
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            if (input.type === 'number') {
+                input.value = '';
+            } else if (input.type === 'checkbox') {
+                input.checked = false;
+            }
+        });
+
+        // Clear buff and shield lists
+        this.percentageBuffList.innerHTML = '';
+        this.fixedBuffList.innerHTML = '';
+        this.shieldList.innerHTML = '';
+
+        // Reset calculator
+        this.calculator = new DamageCalculator();
+
+        // Clear result
+        this.resultDiv.textContent = '';
+
+        // Clear localStorage
+        localStorage.removeItem('damageCalculatorState');
+
+        alert('Tất cả dữ liệu đã được xóa.');
     }
 
     saveState() {
@@ -199,13 +344,19 @@ class UIManager {
             skillMultiplier: this.skillMultiplierInput.value,
             incomingDamage: this.incomingDamageInput.value,
             defense: this.defenseInput.value,
+            fakeHP: this.fakeHPInput.value,
             damageReduction: this.damageReductionInput.value,
+            defPierce: this.defPierceCheckbox.checked,
+            piercingDamage: this.piercingDamageCheckbox.checked,
+            trueDamage: this.trueDamageCheckbox.checked,
+            fatalDamage: this.fatalDamageCheckbox.checked,
+            constantDamage: this.constantDamageCheckbox.checked,
             calculator: this.calculator.getState()
         };
         localStorage.setItem('damageCalculatorState', JSON.stringify(state));
     }
 
-    loadState() {
+loadState() {
         const savedState = localStorage.getItem('damageCalculatorState');
         if (savedState) {
             const state = JSON.parse(savedState);
@@ -218,78 +369,61 @@ class UIManager {
             this.skillMultiplierInput.value = state.skillMultiplier || '';
             this.incomingDamageInput.value = state.incomingDamage || '';
             this.defenseInput.value = state.defense || '';
+            this.fakeHPInput.value = state.fakeHP || '';
             this.damageReductionInput.value = state.damageReduction || '';
+            this.defPierceCheckbox.checked = state.defPierce || false;
+            this.piercingDamageCheckbox.checked = state.piercingDamage || false;
+            this.trueDamageCheckbox.checked = state.trueDamage || false;
+            this.fatalDamageCheckbox.checked = state.fatalDamage || false;
+            this.constantDamageCheckbox.checked = state.constantDamage || false;
             this.calculator.loadState(state.calculator);
-            this.renderBuffs();
+            this.renderBuffsAndShields();
         }
     }
 
-    renderBuffs() {
+    renderBuffsAndShields() {
+        // Render percentage buffs
         this.percentageBuffList.innerHTML = '';
-        this.fixedBuffList.innerHTML = '';
-        this.calculator.percentageBuffs.forEach(buff => {
-            this.renderBuff('percentage', buff * 100);
-        });
-        this.calculator.fixedBuffs.forEach(buff => {
-            this.renderBuff('fixed', buff);
-        });
-    }
-
-    renderBuff(type, value) {
-        const buffElement = document.createElement('div');
-        buffElement.classList.add('buff-item');
-        
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'X';
-        removeButton.addEventListener('click', () => this.removeBuff(type, buffElement));
-        
-        const valueSpan = document.createElement('span');
-        valueSpan.classList.add('buff-value');
-        valueSpan.textContent = `${type === 'percentage' ? value.toFixed(1) + '%' : value.toFixed(1)}`;
-        
-        buffElement.appendChild(removeButton);
-        buffElement.appendChild(valueSpan);
-
-        if (type === 'percentage') {
+        this.calculator.percentageBuffs.forEach((buff, index) => {
+            const buffElement = document.createElement('div');
+            buffElement.classList.add('buff-item');
+            buffElement.textContent = `${(buff * 100).toFixed(1)}%`;
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'X';
+            removeButton.addEventListener('click', () => this.removeBuff('percentage', buffElement));
+            buffElement.appendChild(removeButton);
             this.percentageBuffList.appendChild(buffElement);
-        } else {
-            this.fixedBuffList.appendChild(buffElement);
-        }
-    }
-	
-	clearAllData() {
-        // Xóa localStorage
-        localStorage.removeItem('damageCalculatorState');
+        });
 
-        // Đặt lại giá trị của tất cả các trường nhập liệu
-        this.baseStatInput.value = '';
-        this.baseDamageInput.value = '';
-        this.skillMultiplierInput.value = '';
-        this.incomingDamageInput.value = '';
-        this.defenseInput.value = '';
-        this.damageReductionInput.value = '';
-        this.buffPercentageInput.value = '';
-        this.buffFixedInput.value = '';
-
-        // Xóa tất cả các buff
-        this.percentageBuffList.innerHTML = '';
+        // Render fixed buffs
         this.fixedBuffList.innerHTML = '';
-        this.calculator.percentageBuffs = [];
-        this.calculator.fixedBuffs = [];
+        this.calculator.fixedBuffs.forEach((buff, index) => {
+            const buffElement = document.createElement('div');
+            buffElement.classList.add('buff-item');
+            buffElement.textContent = buff.toString();
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'X';
+            removeButton.addEventListener('click', () => this.removeBuff('fixed', buffElement));
+            buffElement.appendChild(removeButton);
+            this.fixedBuffList.appendChild(buffElement);
+        });
 
-        // Đặt lại kết quả
-        this.resultDiv.textContent = '';
-
-        // Chuyển về tab đầu tiên
-        this.switchTab(this.tabButtons[0]);
-        if (this.subTabButtons.length > 0) {
-            this.switchSubTab(this.subTabButtons[0]);
-        }
-
-        alert('Tất cả dữ liệu đã được xóa.');
+        // Render shields
+        this.shieldList.innerHTML = '';
+        this.calculator.physicalShields.forEach((shield, index) => {
+            const shieldElement = document.createElement('div');
+            shieldElement.classList.add('shield-item');
+            shieldElement.textContent = `Độ bền: ${shield.durability}, Def: ${shield.def}, Máu ảo: ${shield.fakeHP}, Giảm damage: ${shield.damageReduction}%`;
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'X';
+            removeButton.addEventListener('click', () => this.removeShield(shieldElement));
+            shieldElement.appendChild(removeButton);
+            this.shieldList.appendChild(shieldElement);
+        });
     }
 }
 
+// Khởi tạo ứng dụng
 document.addEventListener('DOMContentLoaded', () => {
     const calculator = new DamageCalculator();
     new UIManager(calculator);

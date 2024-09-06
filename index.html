@@ -60,27 +60,70 @@
                 </div>
                 <div id="damage-taken" class="tab-pane">
                     <h2>Tính toán sát thương nhận vào</h2>
-                    <div class="input-group">
-                        <label for="incoming-damage">Sát thương gốc:</label>
-                        <input type="number" id="incoming-damage" min="0">
+                    <div class="damage-info">
+                        <h3>Thông tin sát thương</h3>
+                        <div class="input-group">
+                            <label for="incoming-damage">Chỉ số sát thương:</label>
+                            <input type="number" id="incoming-damage" min="0">
+                        </div>
+                        <div class="effect-group">
+                            <label><input type="checkbox" id="def-pierce"> Xuyên Def</label>
+                            <label><input type="checkbox" id="piercing-damage"> Piercing Damage</label>
+                            <label><input type="checkbox" id="true-damage"> True Damage</label>
+                            <label><input type="checkbox" id="fatal-damage"> Fatal Damage</label>
+                            <label><input type="checkbox" id="constant-damage"> CDD (Constant Damage)</label>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label for="defense">Phòng thủ:</label>
-                        <input type="number" id="defense" min="0">
+                    <div class="defender-info">
+                        <h3>Thông tin người nhận sát thương</h3>
+                        <div class="input-group">
+                            <label for="defense">Def:</label>
+                            <input type="number" id="defense" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label for="fake-hp">Máu ảo:</label>
+                            <input type="number" id="fake-hp" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label for="damage-reduction">Giảm damage (%):</label>
+                            <input type="number" id="damage-reduction" min="0" max="100" step="0.1">
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label for="damage-reduction">Giảm sát thương (%):</label>
-                        <input type="number" id="damage-reduction" min="0" max="100" step="0.1">
+                    <div class="physical-shield">
+                        <h3>Khiên vật lý</h3>
+                        <div class="input-group">
+                            <label for="shield-durability">Độ bền:</label>
+                            <input type="number" id="shield-durability" min="0">
+                        </div>
+                        <div class="shield-effects">
+                            <div class="input-group">
+                                <label for="shield-def">Def:</label>
+                                <input type="number" id="shield-def" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="shield-fake-hp">Máu ảo:</label>
+                                <input type="number" id="shield-fake-hp" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="shield-damage-reduction">Giảm damage (%):</label>
+                                <input type="number" id="shield-damage-reduction" min="0" max="100" step="0.1">
+                            </div>
+                        </div>
+                        <button id="add-shield">Thêm khiên</button>
                     </div>
+                    <div id="shield-list" class="shield-list"></div>
                 </div>
             </div>
-		<div class="button-group">
-            <button id="calculate">Tính Toán</button>
-            <button id="clear-data">Xóa toàn bộ dữ liệu đã nhập</button>
         </div>
+        <div class="button-group">
+            <button id="calculate">Tính Toán</button>
+            <button id="clear-data">Xóa dữ liệu</button>
         </div>
         <div id="result" class="result"></div>
     </div>
+    <footer>
+        <p>&copy; 2024 Bản quyền thuộc về discord Rafine7262</p>
+    </footer>
     <script src="damage.js"></script>
 </body>
 </html>
