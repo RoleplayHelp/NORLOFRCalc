@@ -58,10 +58,10 @@ class DamageCalculator {
                 remainingDamage *= (1 - defenderInfo.damageReduction / 100);
             }
 
-            // Xử lý khiên vật lý
-            if (!piercingDamage && !fatalDamage) {
+            // Xử lý khiên vật lý (Fatal Damage vẫn bị chặn bởi khiên)
+            if (!piercingDamage) {
                 if (constantDamage) {
-                    // CDD làm giảm độ bền của tất cả khiên về 0 nếu sát thương cao hơn độ bền
+                    // Logic CDD giữ nguyên
                     for (let shield of currentShields) {
                         if (remainingDamage > shield.durability) {
                             shield.durability = 0;
