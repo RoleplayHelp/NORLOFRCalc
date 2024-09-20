@@ -5,6 +5,10 @@ class DamageCalculator {
         this.physicalShields = [];
     }
 
+    resetShields() {
+        this.physicalShields = [];
+    }
+
     addPercentageBuff(value) {
         this.percentageBuffs.push(value / 100);
     }
@@ -368,13 +372,14 @@ class UIManager {
                 this.resultDiv.textContent = `Kết quả tính toán sát thương gây ra: ${result.toFixed(2)}`;
             }
         } else {
+            // Đọc lại tất cả thông tin từ giao diện người dùng mỗi lần tính toán
             const attacksInfo = Array.from(this.attacksContainer.children).map((attack, index) => ({
-                incomingDamage: parseFloat(document.getElementById(`incoming-damage-${index}`).value) || 0,
-                defPierce: document.getElementById(`def-pierce-${index}`).checked,
-                piercingDamage: document.getElementById(`piercing-damage-${index}`).checked,
-                trueDamage: document.getElementById(`true-damage-${index}`).checked,
-                fatalDamage: document.getElementById(`fatal-damage-${index}`).checked,
-                constantDamage: document.getElementById(`constant-damage-${index}`).checked
+                incomingDamage: parseFloat(attack.querySelector(`#incoming-damage-${index}`).value) || 0,
+                defPierce: attack.querySelector(`#def-pierce-${index}`).checked,
+                piercingDamage: attack.querySelector(`#piercing-damage-${index}`).checked,
+                trueDamage: attack.querySelector(`#true-damage-${index}`).checked,
+                fatalDamage: attack.querySelector(`#fatal-damage-${index}`).checked,
+                constantDamage: attack.querySelector(`#constant-damage-${index}`).checked
             }));
 
             const defenderInfo = {
@@ -382,6 +387,13 @@ class UIManager {
                 fakeHP: parseFloat(this.fakeHPInput.value) || 0,
                 damageReduction: parseFloat(this.damageReductionInput.value) || 0
             };
+
+            // Đặt lại trạng thái của calculator trước mỗi lần tính toán
+            this.calculator.resetShields();
+            this.calculator.physicalShields = Array.from(this.shieldList.children).map(shieldElement => {
+                const [durability, def, fakeHP, damageReduction] = shieldElement.textContent.match(/\d+(\.\d+)?/g).map(Number);
+                return { durability, def, fakeHP, damageReduction };
+            });
 
             const result = this.calculator.calculateDamageTaken(attacksInfo, defenderInfo);
             this.resultDiv.textContent = `Tổng sát thương cuối cùng: ${result.toFixed(2)}`;
