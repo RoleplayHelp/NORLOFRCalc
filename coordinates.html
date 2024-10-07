@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!-- Phần thêm nút "Quay lại trang chủ" -->
+<a href="index.html">
+    <button>🏠 Quay lại trang chủ</button>
+</a>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinate Calculator</title>
+    <link rel="stylesheet" href="coordinates.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Coordinate Calculator</h1>
+
+        <!-- Phần nhập tọa độ -->
+        <div class="input-section">
+            <h2>Nhập tọa độ</h2>
+            <div class="input-group">
+                <label for="point-name">Tên điểm (không bắt buộc):</label>
+                <input type="text" id="point-name" placeholder="Nhập tên điểm">
+            </div>
+            <div class="input-group">
+                <label for="x-coordinate">Tọa độ X:</label>
+                <input type="number" id="x-coordinate" placeholder="Nhập tọa độ X" step="any">
+            </div>
+            <div class="input-group">
+                <label for="y-coordinate">Tọa độ Y:</label>
+                <input type="number" id="y-coordinate" placeholder="Nhập tọa độ Y" step="any">
+            </div>
+            <div class="input-group">
+                <label for="z-coordinate">Tọa độ Z (mặc định là 0 nếu bỏ trống):</label>
+                <input type="number" id="z-coordinate" placeholder="Nhập tọa độ Z" step="any">
+            </div>
+            <button id="add-coordinate">Thêm tọa độ</button>
+        </div>
+
+        <!-- Danh sách tọa độ đã nhập -->
+        <h3>Danh sách tọa độ</h3>
+        <ul id="coordinate-list"></ul>
+
+        <!-- Phần tính toán tuyến đường -->
+        <h3>Tính toán tuyến đường</h3>
+        <div class="input-group">
+            <label for="start-point">Điểm xuất phát:</label>
+            <select id="start-point"></select>
+        </div>
+
+        <div id="waypoints-container"></div>
+        <button id="add-waypoint">Thêm điểm trung gian</button>
+
+        <div class="input-group">
+            <label for="end-point">Điểm dừng:</label>
+            <select id="end-point"></select>
+        </div>
+
+        <div class="input-group">
+            <label for="player-speed">Tốc độ di chuyển của đối tượng (Spd):</label>
+            <input type="number" id="player-speed" placeholder="Nhập tốc độ di chuyển (spd)">
+            <small>1 spd = 0.2 m/s</small>
+        </div>
+        <button id="calculate-route">Xác nhận tuyến đường</button>
+
+        <!-- Kết quả tính toán -->
+        <div id="result"></div>
+
+        <!-- Quản lý dữ liệu -->
+        <h3>Quản lý dữ liệu</h3>
+        <button id="clear-storage">Xóa toàn bộ dữ liệu</button>
+    </div>
+
+    <script src="coordinates.js"></script>
+</body>
+</html>

@@ -3,201 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="damage.css">
+    <title>Home - Calculator</title>
+    <link rel="stylesheet" href="home.css">
 </head>
 <body>
     <div class="container">
-        <h1>Calculator <button id="stat-help-button" class="help-button">?</button></h1>
-
-        <div class="tab-container">
-            <div class="tab-header">
-                <button class="tab-button active" data-tab="stat-buff">Tính toán chỉ số có buff/debuff</button>
-                <button class="tab-button" data-tab="damage-taken">Tính toán sát thương nhận vào</button>
-            </div>
-
-            <div class="tab-content">
-                <div id="stat-buff" class="tab-pane active">
-                    <div class="sub-tab-header">
-                        <button class="sub-tab-button active" data-sub-tab="stat">Tính chỉ số</button>
-                        <button class="sub-tab-button" data-sub-tab="skill-damage">Tính sát thương gây ra</button>
-                    </div>
-
-                    <div id="stat" class="sub-tab-pane active">
-                        <h2>Tính toán chỉ số</h2>
-                        <div class="input-group">
-                            <label for="base-stat" data-tooltip="Nhập chỉ số gốc của nhân vật hoặc trang bị">Chỉ số ban đầu:</label>
-                            <input type="number" id="base-stat" min="0" step="any">
-                        </div>
-                    </div>
-
-                    <div id="skill-damage" class="sub-tab-pane">
-                        <h2>Tính toán sát thương gây ra</h2>
-                        <div class="input-group">
-                            <label for="base-damage" data-tooltip="Nhập chỉ số sát thương gốc của kỹ năng hoặc vũ khí">Sát thương cơ bản:</label>
-                            <input type="number" id="base-damage" min="0" step="any">
-                        </div>
-                        <div class="input-group">
-                            <label for="skill-multiplier" data-tooltip="Nhập % sát thương của kỹ năng">Hệ số skill (%):</label>
-                            <input type="number" id="skill-multiplier" min="0" step="any">
-                        </div>
-                    </div>
-
-                    <div class="buff-debuff-section">
-                        <h3>Buff/Debuff</h3>
-                        <div class="buff-group">
-                            <div class="input-group">
-                                <label for="buff-percentage" data-tooltip="Nhập % tăng/giảm chỉ số">Buff/Debuff %:</label>
-                                <input type="number" id="buff-percentage" step="any">
-                                <button id="add-percentage-buff">Thêm</button>
-                            </div>
-                            <div id="percentage-buff-list" class="buff-list"></div>
-                        </div>
-                        <div class="buff-group">
-                            <div class="input-group">
-                                <label for="buff-fixed" data-tooltip="Nhập giá trị cố định tăng/giảm chỉ số">Buff/Debuff cố định:</label>
-                                <input type="number" id="buff-fixed" step="any">
-                                <button id="add-fixed-buff">Thêm</button>
-                            </div>
-                            <div id="fixed-buff-list" class="buff-list"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="damage-taken" class="tab-pane">
-                    <h2>Tính toán sát thương nhận vào <button id="damage-help-button" class="help-button">?</button></h2>
-                    <div id="attacks-container"></div>
-                    <button id="add-attack">Thêm đòn tấn công</button>
-
-                    <div class="defender-info">
-                        <h3>Thông tin người nhận sát thương</h3>
-                        <div class="input-group">
-                            <label for="defense" data-tooltip="Chỉ số phòng thủ của người nhận sát thương">Def:</label>
-                            <input type="number" id="defense" min="0" step="any">
-                        </div>
-                        <div class="input-group">
-                            <label for="fake-hp" data-tooltip="Lượng máu ảo bảo vệ trước sát thương thật">Máu ảo:</label>
-                            <input type="number" id="fake-hp" min="0" step="any">
-                        </div>
-                        <div class="input-group">
-                            <label for="damage-reduction" data-tooltip="Phần trăm giảm sát thương chung">Giảm damage (%):</label>
-                            <input type="number" id="damage-reduction" min="0" max="100" step="any">
-                        </div>
-                    </div>
-
-                    <div class="physical-shield">
-                        <h3>Khiên vật lý</h3>
-                        <div class="input-group">
-                            <label for="shield-durability" data-tooltip="Lượng sát thương mà khiên có thể hấp thụ">Độ bền:</label>
-                            <input type="number" id="shield-durability" min="0" step="any">
-                        </div>
-                        <div class="shield-effects">
-                            <div class="input-group">
-                                <label for="shield-def" data-tooltip="Chỉ số phòng thủ bổ sung của khiên">Def:</label>
-                                <input type="number" id="shield-def" min="0" step="any">
-                            </div>
-                            <div class="input-group">
-                                <label for="shield-fake-hp" data-tooltip="Lượng máu ảo bổ sung từ khiên">Máu ảo:</label>
-                                <input type="number" id="shield-fake-hp" min="0" step="any">
-                            </div>
-                            <div class="input-group">
-                                <label for="shield-damage-reduction" data-tooltip="Phần trăm giảm sát thương bổ sung từ khiên">Giảm damage (%):</label>
-                                <input type="number" id="shield-damage-reduction" min="0" max="100" step="any">
-                            </div>
-                        </div>
-                        <button id="add-shield">Thêm khiên</button>
-                        <div id="shield-list" class="shield-list"></div>
-                    </div>
-                </div>
-            </div>
+        <h1>Chọn tính năng bạn muốn sử dụng</h1>
+        
+        <div class="option-buttons">
+            <a href="damage.html">
+                <button>Tính Damage 🗡️</button>
+            </a>
+            <a href="coordinates.html">
+                <button>Tính Khoảng Cách 📍</button>
+            </a>
         </div>
-
-        <div class="button-group">
-            <button id="calculate">Tính Toán</button>
-            <button id="clear-data">Xóa dữ liệu</button>
-        </div>
-
-        <div id="result" class="result"></div>
     </div>
-
-<div id="stat-help-modal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2 class="modal-title">Hướng dẫn Tính toán Chỉ số</h2>
-        <p>1. <strong class="section-title">Tính chỉ số cơ bản:</strong></p>
-        <ul>
-            <li><strong class="term">Chỉ số ban đầu:</strong> Nhập chỉ số gốc của nhân vật hoặc trang bị.</li>
-            <li><strong class="term">Buff/Debuff %:</strong> Thêm các hiệu ứng tăng/giảm theo phần trăm. Ví dụ: <span class="highlight positive">+10%</span> ATK, <span class="highlight negative">-5%</span> DEF.</li>
-            <li><strong class="term">Buff/Debuff cố định:</strong> Thêm các hiệu ứng tăng/giảm theo giá trị cố định. Ví dụ: <span class="highlight positive">+100</span> HP, <span class="highlight negative">-20</span> SPD.</li>
-        </ul>
-        <p>2. <strong class="section-title">Tính sát thương gây ra:</strong></p>
-        <ul>
-            <li><strong class="term">Sát thương cơ bản:</strong> Nhập chỉ số sát thương gốc của kỹ năng hoặc vũ khí.</li>
-            <li><strong class="term">Hệ số skill (%):</strong> Nhập phần trăm sát thương của kỹ năng. Ví dụ: <span class="highlight">150%</span> cho một kỹ năng mạnh.</li>
-        </ul>
-        <p><strong class="section-title">Cách tính:</strong></p>
-        <ol class="formula-list">
-            <li>Chỉ số sau buff = Chỉ số ban đầu * (1 + Tổng buff/debuff %) + Tổng buff/debuff cố định</li>
-            <li>Sát thương gây ra = Sát thương cơ bản * (Hệ số skill / 100) * (1 + Tổng buff/debuff % sát thương) + Tổng buff/debuff cố định sát thương</li>
-        </ol>
-        <p><strong class="section-title">Lưu ý:</strong></p>
-        <ul class="note-list">
-            <li>Buff dương sẽ tăng chỉ số, debuff âm sẽ giảm chỉ số.</li>
-            <li>Có thể thêm nhiều buff/debuff, hệ thống sẽ tính tổng.</li>
-            <li>Kết quả sẽ được làm tròn đến 2 chữ số thập phân.</li>
-        </ul>
-    </div>
-</div>
-
-<div id="damage-help-modal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2 class="modal-title">Hướng dẫn Tính toán Sát thương Nhận vào</h2>
-        <p>1. <strong class="section-title">Thông tin sát thương:</strong></p>
-        <ul class="damage-type-list">
-            <li><strong class="term">Chỉ số sát thương:</strong> Nhập lượng sát thương gốc của đòn tấn công.</li>
-            <li><span class="keyword ignore-def">Xuyên Def:</span> Bỏ qua phòng thủ (DEF) của mục tiêu.</li>
-            <li><span class="keyword piercing">Piercing Damage:</span> Sát thương xuyên qua khiên vật lý và các hiệu ứng chặn đòn.</li>
-            <li><span class="keyword true-damage">True Damage:</span> Bỏ qua giảm % sát thương.</li>
-            <li><span class="keyword fatal">Fatal Damage:</span> Sát thương chí mạng, bỏ qua giảm % sát thương, DEF và Fake HP, nhưng vẫn bị chặn bởi khiên vật lý.</li>
-            <li><span class="keyword cdd">CDD (Constant Damage):</span> Sát thương duy trì, làm giảm độ bền của tất cả khiên về 0 mà sát thương đòn tấn công không bị giảm nếu sát thương cao hơn độ bền khiên. Nếu không, tương tác với khiên như sát thương thông thường.</li>
-        </ul>
-        <p>2. <strong class="section-title">Thông tin người nhận sát thương:</strong></p>
-        <ul>
-            <li><strong class="term">Def:</strong> Chỉ số phòng thủ của người nhận sát thương.</li>
-            <li><strong class="term">Máu ảo:</strong> Lượng máu ảo bảo vệ trước sát thương thật.</li>
-            <li><strong class="term">Giảm damage (%):</strong> Phần trăm giảm sát thương chung.</li>
-        </ul>
-        <p>3. <strong class="section-title">Khiên vật lý:</strong></p>
-        <ul>
-            <li><strong class="term">Độ bền:</strong> Lượng sát thương mà khiên có thể hấp thụ.</li>
-            <li><strong class="term">Def:</strong> Chỉ số phòng thủ bổ sung của khiên.</li>
-            <li><strong class="term">Máu ảo:</strong> Lượng máu ảo bổ sung từ khiên.</li>
-            <li><strong class="term">Giảm damage (%):</strong> Phần trăm giảm sát thương bổ sung từ khiên.</li>
-        </ul>
-        <p><strong class="section-title">Quy trình tính toán:</strong></p>
-        <ol class="calculation-steps">
-            <li>Áp dụng giảm sát thương chung (trừ True Damage và Fatal Damage).</li>
-            <li>Xử lý khiên vật lý (nếu không phải Piercing Damage hoặc Fatal Damage).</li>
-            <li>Áp dụng máu ảo (trừ Fatal Damage).</li>
-            <li>Áp dụng Def (nếu không phải Xuyên Def hoặc Fatal Damage).</li>
-            <li>Tính tổng sát thương sau khi qua tất cả các bước trên.</li>
-        </ol>
-        <p><strong class="section-title">Lưu ý:</strong></p>
-        <ul class="note-list">
-            <li>Có thể thêm nhiều đòn tấn công để tính tổng sát thương.</li>
-            <li>Khiên và máu ảo sẽ giảm sau mỗi đòn tấn công, Def không bị ảnh hưởng.</li>
-            <li>CDD làm giảm độ bền khiên về 0 nếu sát thương vượt quá độ bền.</li>
-            <li>Kết quả sẽ được làm tròn đến 2 chữ số thập phân.</li>
-        </ul>
-    </div>
-</div>
-
-    <footer>
-        <p>© 2024 Bản quyền thuộc về discord Rafine7262</p>
-    </footer>
-
-    <script src="damage.js"></script>
 </body>
 </html>
