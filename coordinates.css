@@ -2,7 +2,7 @@
 body {
     font-family: 'Arial', sans-serif;
     background-color: #2c3e50; /* Màu nền tối */
-    color: #ecf0f1; /* Màu chữ sáng cho dễ đọc */
+    color: #ecf0f1; /* Màu chữ sáng */
     margin: 0;
     padding: 20px;
     box-sizing: border-box;
@@ -19,7 +19,7 @@ body {
 
 /* Tiêu đề */
 h1, h2, h3 {
-    color: #e74c3c; /* Màu đỏ nhấn mạnh cho tiêu đề */
+    color: #e74c3c; /* Màu nhấn mạnh cho tiêu đề */
     text-align: center;
     margin-bottom: 20px;
 }
@@ -67,6 +67,15 @@ button + button {
     margin-left: 10px;
 }
 
+/* Màu sắc cho nút thêm điểm trung gian */
+button.add-waypoint-button {
+    background-color: #1abc9c; /* Màu xanh lá cây nhạt cho nút thêm điểm trung gian */
+}
+
+button.add-waypoint-button:hover {
+    background-color: #16a085; /* Đậm màu khi hover */
+}
+
 /* Biểu tượng và màu cho nút sửa và xóa */
 button.edit-button {
     background-color: #3498db; /* Màu xanh cho nút sửa */
@@ -75,6 +84,15 @@ button.edit-button {
 
 button.delete-button {
     background-color: #e74c3c; /* Màu đỏ cho nút xóa */
+}
+
+button.waypoint-delete {
+    background-color: #e67e22; /* Màu cam cho nút xóa điểm trung gian */
+    margin-left: 10px;
+}
+
+button.waypoint-delete:hover {
+    background-color: #d35400;
 }
 
 /* Danh sách tọa độ */
@@ -110,6 +128,38 @@ button.delete-button::before {
     margin-right: 5px;
 }
 
+button.add-waypoint-button::before {
+    content: '➕'; /* Icon thêm điểm trung gian */
+    margin-right: 5px;
+}
+
+button.waypoint-delete::before {
+    content: '❌'; /* Icon xóa điểm trung gian */
+    margin-right: 5px;
+}
+
+/* Điểm trung gian */
+.waypoint {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #7f8c8d;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    border-radius: 5px;
+    width: calc(100% - 60px);
+}
+
+.waypoint-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.waypoint::before {
+    content: '🛣️'; /* Icon đường đi */
+    margin-right: 10px;
+}
+
 /* Kết quả tính toán */
 #result {
     background-color: #27ae60; /* Màu xanh lá cho kết quả */
@@ -119,6 +169,14 @@ button.delete-button::before {
     font-size: 18px;
     line-height: 1.6;
     color: #ecf0f1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#result::before {
+    content: '🎯'; /* Icon kết quả */
+    margin-right: 10px;
 }
 
 /* Chỉnh độ cao của danh sách chọn */

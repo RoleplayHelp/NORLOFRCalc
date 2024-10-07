@@ -91,47 +91,46 @@ class CoordinateUI {
         this.clearStorageButton.addEventListener('click', () => this.clearAllCoordinates());
     }
 
-handleAddOrEditCoordinate() {
-    const coordinatesCount = this.coordinateManager.getAllCoordinates().length;
-    const defaultName = `Điểm ${coordinatesCount + 1}`;
-    let name = this.pointNameInput.value || defaultName;
-    const x = parseFloat(this.xInput.value);
-    const y = parseFloat(this.yInput.value);
-    const z = parseFloat(this.zInput.value) || 0;
+    handleAddOrEditCoordinate() {
+        const coordinatesCount = this.coordinateManager.getAllCoordinates().length;
+        const defaultName = `Điểm ${coordinatesCount + 1}`;
+        let name = this.pointNameInput.value || defaultName;
+        const x = parseFloat(this.xInput.value);
+        const y = parseFloat(this.yInput.value);
+        const z = parseFloat(this.zInput.value) || 0;
 
-    if (isNaN(x) || isNaN(y)) {
-        alert('Vui lòng nhập tọa độ hợp lệ.');
-        return;
+        if (isNaN(x) || isNaN(y)) {
+            alert('Vui lòng nhập tọa độ hợp lệ.');
+            return;
+        }
+
+        // Kiểm tra xem tên có bị trùng không, nếu có thì thêm số vào cuối tên
+        let uniqueName = name;
+        let counter = 1;
+        const allCoordinates = this.coordinateManager.getAllCoordinates();
+
+        while (allCoordinates.some(coord => coord.name === uniqueName)) {
+            uniqueName = `${name} (${counter})`;
+            counter++;
+        }
+        
+        name = uniqueName;
+
+        const coordinate = new Coordinate(name, x, y, z);
+
+        if (this.editIndex !== null) {
+            // Chỉnh sửa tọa độ hiện tại
+            this.coordinateManager.editCoordinate(this.editIndex, coordinate);
+            this.editIndex = null;
+            this.addButton.textContent = 'Thêm tọa độ'; // Đổi lại nút thành 'Thêm' sau khi sửa xong
+        } else {
+            // Thêm tọa độ mới
+            this.coordinateManager.addCoordinate(coordinate);
+        }
+
+        this.clearInputs();
+        this.renderCoordinateList();
     }
-
-    // Kiểm tra xem tên có bị trùng không, nếu có thì thêm số vào cuối tên
-    let uniqueName = name;
-    let counter = 1;
-    const allCoordinates = this.coordinateManager.getAllCoordinates();
-
-    while (allCoordinates.some(coord => coord.name === uniqueName)) {
-        uniqueName = `${name} (${counter})`;
-        counter++;
-    }
-    
-    name = uniqueName;
-
-    const coordinate = new Coordinate(name, x, y, z);
-
-    if (this.editIndex !== null) {
-        // Chỉnh sửa tọa độ hiện tại
-        this.coordinateManager.editCoordinate(this.editIndex, coordinate);
-        this.editIndex = null;
-        this.addButton.textContent = 'Thêm tọa độ'; // Đổi lại nút thành 'Thêm' sau khi sửa xong
-    } else {
-        // Thêm tọa độ mới
-        this.coordinateManager.addCoordinate(coordinate);
-    }
-
-    this.clearInputs();
-    this.renderCoordinateList();
-}
-
 
     handleEditCoordinate(index) {
         const coordinate = this.coordinateManager.getCoordinate(index);
@@ -170,11 +169,13 @@ handleAddOrEditCoordinate() {
             // Nút sửa
             const editButton = document.createElement('button');
             editButton.textContent = 'Sửa';
+            editButton.classList.add('edit-button');
             editButton.addEventListener('click', () => this.handleEditCoordinate(index));
 
             // Nút xóa
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Xóa';
+            deleteButton.classList.add('delete-button');
             deleteButton.addEventListener('click', () => this.handleDeleteCoordinate(index));
 
             li.appendChild(editButton);
@@ -192,6 +193,8 @@ handleAddOrEditCoordinate() {
 
     addWaypoint() {
         const coordinates = this.coordinateManager.getAllCoordinates();
+        const waypointDiv = document.createElement('div'); // Tạo một div để chứa select và nút xóa
+
         const waypointSelect = document.createElement('select');
         waypointSelect.classList.add('waypoint');
         
@@ -202,48 +205,56 @@ handleAddOrEditCoordinate() {
             waypointSelect.appendChild(option);
         });
 
-        this.waypointsContainer.appendChild(waypointSelect);
+        // Nút xóa điểm trung gian
+        const deleteWaypointButton = document.createElement('button');
+        deleteWaypointButton.textContent = 'Xóa điểm';
+        deleteWaypointButton.addEventListener('click', () => {
+            waypointDiv.remove();  // Xóa cả div chứa select và nút xóa
+        });
+
+        waypointDiv.appendChild(waypointSelect);
+        waypointDiv.appendChild(deleteWaypointButton);
+        this.waypointsContainer.appendChild(waypointDiv);
     }
 
-calculateRoute() {
-    const startPointIndex = this.startPointSelect.value;
-    const endPointIndex = this.endPointSelect.value;
-    const waypointSelects = Array.from(document.querySelectorAll('.waypoint'));
+    calculateRoute() {
+        const startPointIndex = this.startPointSelect.value;
+        const endPointIndex = this.endPointSelect.value;
+        const waypointSelects = Array.from(document.querySelectorAll('.waypoint'));
 
-    if (!startPointIndex || !endPointIndex) {
-        alert('Vui lòng chọn điểm xuất phát và điểm dừng.');
-        return;
+        if (!startPointIndex || !endPointIndex) {
+            alert('Vui lòng chọn điểm xuất phát và điểm dừng.');
+            return;
+        }
+
+        const selectedPoints = [startPointIndex, ...waypointSelects.map(select => select.value), endPointIndex];
+
+        const speedSpd = parseFloat(this.speedInput.value);
+        const isSpeedEntered = !isNaN(speedSpd) && speedSpd > 0;  // Kiểm tra xem tốc độ có được nhập hay không
+
+        let totalDistance = 0;
+        const route = selectedPoints.map(index => this.coordinateManager.getCoordinate(index).name).join(' -> ');
+
+        for (let i = 0; i < selectedPoints.length - 1; i++) {
+            const point1 = this.coordinateManager.getCoordinate(selectedPoints[i]);
+            const point2 = this.coordinateManager.getCoordinate(selectedPoints[i + 1]);
+            totalDistance += point1.distanceTo(point2);
+        }
+
+        let resultText = `Tuyến đường: ${route}<br>Tổng khoảng cách: ${totalDistance.toFixed(2)} mét`;
+
+        // Chỉ tính thời gian di chuyển nếu tốc độ đã được nhập
+        if (isSpeedEntered) {
+            const speedInMetersPerSecond = speedSpd * 0.2;
+            const timeInSeconds = totalDistance / speedInMetersPerSecond;
+            const seconds = Math.floor(timeInSeconds);
+            const milliseconds = Math.round((timeInSeconds - seconds) * 1000);
+
+            resultText += `<br>Thời gian di chuyển: ${seconds} giây và ${milliseconds} mili giây.`;
+        }
+
+        this.resultDiv.innerHTML = resultText;
     }
-
-    const selectedPoints = [startPointIndex, ...waypointSelects.map(select => select.value), endPointIndex];
-
-    const speedSpd = parseFloat(this.speedInput.value);
-    const isSpeedEntered = !isNaN(speedSpd) && speedSpd > 0;  // Kiểm tra xem tốc độ có được nhập hay không
-
-    let totalDistance = 0;
-    const route = selectedPoints.map(index => this.coordinateManager.getCoordinate(index).name).join(' -> ');
-
-    for (let i = 0; i < selectedPoints.length - 1; i++) {
-        const point1 = this.coordinateManager.getCoordinate(selectedPoints[i]);
-        const point2 = this.coordinateManager.getCoordinate(selectedPoints[i + 1]);
-        totalDistance += point1.distanceTo(point2);
-    }
-
-    let resultText = `Tuyến đường: ${route}<br>Tổng khoảng cách: ${totalDistance.toFixed(2)} mét`;
-
-    // Chỉ tính thời gian di chuyển nếu tốc độ đã được nhập
-    if (isSpeedEntered) {
-        const speedInMetersPerSecond = speedSpd * 0.2;
-        const timeInSeconds = totalDistance / speedInMetersPerSecond;
-        const seconds = Math.floor(timeInSeconds);
-        const milliseconds = Math.round((timeInSeconds - seconds) * 1000);
-
-        resultText += `<br>Thời gian di chuyển: ${seconds} giây và ${milliseconds} mili giây.`;
-    }
-
-    this.resultDiv.innerHTML = resultText;
-}
-
 
     clearAllCoordinates() {
         this.coordinateManager.clearAllCoordinates();
