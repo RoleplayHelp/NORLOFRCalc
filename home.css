@@ -41,3 +41,13 @@ button {
 button:hover {
     background-color: #2980b9; /* Đậm màu khi hover */
 }
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 10px;
+    background-color: #34495e;
+    color: #ecf0f1;
+    border-radius: 4px;
+    font-size: 0.9em;
+}

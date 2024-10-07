@@ -167,6 +167,16 @@ button.add-waypoint-button::before {
     text-align: left; /* Đảm bảo văn bản được căn giữa */
 }
 
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 10px;
+    background-color: #34495e;
+    color: #ecf0f1;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
 #result::before {
     content: '🎯'; /* Icon kết quả */
     margin-right: 10px;
