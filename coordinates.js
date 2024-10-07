@@ -191,31 +191,35 @@ class CoordinateUI {
         });
     }
 
-    addWaypoint() {
-        const coordinates = this.coordinateManager.getAllCoordinates();
-        const waypointDiv = document.createElement('div'); // Tạo một div để chứa select và nút xóa
+addWaypoint() {
+    const coordinates = this.coordinateManager.getAllCoordinates();
+    const waypointDiv = document.createElement('div'); // Tạo một div để chứa select và nút xóa
+    waypointDiv.classList.add('waypoint-container'); // Thêm class cho div để căn chỉnh
 
-        const waypointSelect = document.createElement('select');
-        waypointSelect.classList.add('waypoint');
-        
-        coordinates.forEach((coordinate, index) => {
-            const option = document.createElement('option');
-            option.value = index;
-            option.textContent = coordinate.name;
-            waypointSelect.appendChild(option);
-        });
+    const waypointSelect = document.createElement('select');
+    waypointSelect.classList.add('waypoint');
+    
+    coordinates.forEach((coordinate, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = coordinate.name;
+        waypointSelect.appendChild(option);
+    });
 
-        // Nút xóa điểm trung gian
-        const deleteWaypointButton = document.createElement('button');
-        deleteWaypointButton.textContent = 'Xóa điểm';
-        deleteWaypointButton.addEventListener('click', () => {
-            waypointDiv.remove();  // Xóa cả div chứa select và nút xóa
-        });
+    // Nút xóa điểm trung gian, chỉ hiện dấu X
+    const deleteWaypointButton = document.createElement('button');
+    deleteWaypointButton.classList.add('waypoint-delete');
+    deleteWaypointButton.innerHTML = '❌'; // Biểu tượng X đỏ
+    deleteWaypointButton.addEventListener('click', () => {
+        waypointDiv.remove();  // Xóa cả div chứa select và nút xóa
+    });
 
-        waypointDiv.appendChild(waypointSelect);
-        waypointDiv.appendChild(deleteWaypointButton);
-        this.waypointsContainer.appendChild(waypointDiv);
-    }
+    waypointDiv.appendChild(waypointSelect);
+    waypointDiv.appendChild(deleteWaypointButton);
+    this.waypointsContainer.appendChild(waypointDiv);
+}
+
+
 
     calculateRoute() {
         const startPointIndex = this.startPointSelect.value;

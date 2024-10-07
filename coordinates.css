@@ -36,7 +36,6 @@ h1, h2, h3 {
 }
 
 .input-group input, .input-group select {
-    width: 100%;
     padding: 10px;
     border-radius: 5px;
     border: none;
@@ -76,23 +75,25 @@ button.add-waypoint-button:hover {
     background-color: #16a085; /* Đậm màu khi hover */
 }
 
-/* Biểu tượng và màu cho nút sửa và xóa */
+/* Biểu tượng và màu cho nút sửa */
 button.edit-button {
     background-color: #3498db; /* Màu xanh cho nút sửa */
     margin-right: 5px;
 }
 
-button.delete-button {
-    background-color: #e74c3c; /* Màu đỏ cho nút xóa */
-}
-
+/* Nút X cho xóa điểm trung gian */
 button.waypoint-delete {
-    background-color: #e67e22; /* Màu cam cho nút xóa điểm trung gian */
-    margin-left: 10px;
+    background: none; /* Không cần nền màu */
+    border: none;
+    font-size: 20px;
+    color: #e74c3c; /* Màu đỏ cho dấu X */
+    cursor: pointer;
+    padding: 0;
+    margin-left: 5px; /* Tạo khoảng cách giữa tên điểm và dấu X */
 }
 
 button.waypoint-delete:hover {
-    background-color: #d35400;
+    color: #c0392b; /* Đậm màu khi hover */
 }
 
 /* Danh sách tọa độ */
@@ -123,36 +124,27 @@ button.edit-button::before {
     margin-right: 5px;
 }
 
-button.delete-button::before {
-    content: '🗑️'; /* Icon biểu tượng xóa */
-    margin-right: 5px;
-}
-
 button.add-waypoint-button::before {
     content: '➕'; /* Icon thêm điểm trung gian */
     margin-right: 5px;
 }
 
-button.waypoint-delete::before {
-    content: '❌'; /* Icon xóa điểm trung gian */
-    margin-right: 5px;
+/* Điểm trung gian */
+.waypoint-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
-/* Điểm trung gian */
 .waypoint {
-    margin-top: 10px;
     padding: 10px;
     border: 1px solid #7f8c8d;
     background-color: #2c3e50;
     color: #ecf0f1;
     border-radius: 5px;
-    width: calc(100% - 60px);
-}
-
-.waypoint-container {
-    display: flex;
+    display: inline-flex; /* Căn chỉnh nội dung ngang */
     align-items: center;
-    margin-bottom: 10px;
+    max-width: 100%; /* Để kích thước tự điều chỉnh theo nội dung */
 }
 
 .waypoint::before {
@@ -170,8 +162,9 @@ button.waypoint-delete::before {
     line-height: 1.6;
     color: #ecf0f1;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: left; /* Căn giữa nội dung */
+    align-items: left;
+    text-align: left; /* Đảm bảo văn bản được căn giữa */
 }
 
 #result::before {
