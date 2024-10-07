@@ -1,7 +1,7 @@
 /* Giao diện tổng thể */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #2c3e50; /* Màu nền tối */
+    background-color: #2c3e50; /* Nền tối */
     color: #ecf0f1; /* Màu chữ sáng */
     margin: 0;
     padding: 20px;
@@ -19,38 +19,48 @@ body {
 
 /* Tiêu đề */
 h1, h2, h3 {
-    color: #e74c3c; /* Màu nhấn mạnh cho tiêu đề */
+    color: #e74c3c; /* Màu đỏ nhấn mạnh */
     text-align: center;
     margin-bottom: 20px;
 }
 
 /* Nhóm nhập liệu */
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .input-group label {
     display: block;
     margin-bottom: 5px;
     color: #ecf0f1;
+    font-size: 16px;
 }
 
 .input-group input, .input-group select {
-    padding: 10px;
+    padding: 5px;
     border-radius: 5px;
     border: none;
     font-size: 16px;
     background-color: #2c3e50;
     color: #ecf0f1;
     border: 1px solid #7f8c8d;
+    min-width: 350px; /* Đặt kích thước tối thiểu */
+    width: auto; /* Để kích thước tự điều chỉnh */
+    max-width: 100%; /* Không vượt quá 100% chiều rộng container */
+    text-align: center; /* Căn giữa nội dung */
+}
+
+/* Căn chỉnh và đặt màu cho các placeholder */
+::placeholder {
+    color: #bdc3c7; /* Màu xám nhẹ cho placeholder */
 }
 
 /* Nút bấm */
 button {
-    background-color: #e74c3c; /* Màu đỏ cho nút bấm */
+    background-color: #e74c3c; /* Màu đỏ */
     color: #ecf0f1;
     border: none;
-    padding: 10px 20px;
+    padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
@@ -58,54 +68,38 @@ button {
 }
 
 button:hover {
-    background-color: #c0392b; /* Đậm màu khi hover */
+    background-color: #c0392b; /* Màu đỏ đậm khi hover */
 }
 
-/* Khoảng cách giữa các phần tử */
 button + button {
-    margin-left: 10px;
+    margin-left: 5px; /* Khoảng cách giữa các nút */
 }
 
-/* Màu sắc cho nút thêm điểm trung gian */
-button.add-waypoint-button {
-    background-color: #1abc9c; /* Màu xanh lá cây nhạt cho nút thêm điểm trung gian */
+/* Nút sửa và xóa nằm kế nhau */
+.button-group {
+    display: flex;
+    gap: 5px; /* Khoảng cách giữa các nút */
 }
 
-button.add-waypoint-button:hover {
-    background-color: #16a085; /* Đậm màu khi hover */
-}
-
-/* Biểu tượng và màu cho nút sửa */
+/* Màu sắc cho nút sửa và xóa */
 button.edit-button {
-    background-color: #3498db; /* Màu xanh cho nút sửa */
-    margin-right: 5px;
+    background-color: #3498db; /* Màu xanh dương cho nút sửa */
 }
 
-/* Nút X cho xóa điểm trung gian */
-button.waypoint-delete {
-    background: none; /* Không cần nền màu */
-    border: none;
-    font-size: 20px;
-    color: #e74c3c; /* Màu đỏ cho dấu X */
-    cursor: pointer;
-    padding: 0;
-    margin-left: 5px; /* Tạo khoảng cách giữa tên điểm và dấu X */
-}
-
-button.waypoint-delete:hover {
-    color: #c0392b; /* Đậm màu khi hover */
+button.delete-button {
+    background-color: #e74c3c; /* Màu đỏ cho nút xóa */
 }
 
 /* Danh sách tọa độ */
 #coordinate-list li {
     list-style-type: none;
     margin-bottom: 10px;
-    padding: 10px;
+    padding: 5px;
     background-color: #2c3e50;
     border: 1px solid #7f8c8d;
     border-radius: 5px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -113,48 +107,33 @@ button.waypoint-delete:hover {
     background-color: #34495e;
 }
 
-/* Thêm icon biểu tượng */
-#coordinate-list li::before {
-    content: '📍'; /* Icon biểu tượng toạ độ */
-    margin-right: 10px;
-}
-
-button.edit-button::before {
-    content: '✏️'; /* Icon biểu tượng sửa */
-    margin-right: 5px;
-}
-
-button.add-waypoint-button::before {
-    content: '➕'; /* Icon thêm điểm trung gian */
-    margin-right: 5px;
-}
-
-/* Điểm trung gian */
-.waypoint-container {
+/* Tên tọa độ và nút căn cùng dòng */
+.coordinate-item {
+    flex: 1;
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
 }
 
-.waypoint {
-    padding: 10px;
-    border: 1px solid #7f8c8d;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    border-radius: 5px;
-    display: inline-flex; /* Căn chỉnh nội dung ngang */
-    align-items: center;
-    max-width: 100%; /* Để kích thước tự điều chỉnh theo nội dung */
-}
-
-.waypoint::before {
-    content: '🛣️'; /* Icon đường đi */
+/* Thêm icon biểu tượng */
+#coordinate-list li::before {
+    content: '📍'; /* Icon tọa độ */
     margin-right: 10px;
+}
+
+/* Biểu tượng và nút bấm */
+button.edit-button::before {
+    content: '✏️'; /* Icon bút cho nút sửa */
+    margin-right: 5px;
+}
+
+button.delete-button::before {
+    content: '🗑️'; /* Icon thùng rác cho nút xóa */
+    margin-right: 5px;
 }
 
 /* Kết quả tính toán */
 #result {
-    background-color: #27ae60; /* Màu xanh lá cho kết quả */
+    background-color: #27ae60; /* Màu xanh lá */
     padding: 15px;
     margin-top: 20px;
     border-radius: 5px;
@@ -162,37 +141,87 @@ button.add-waypoint-button::before {
     line-height: 1.6;
     color: #ecf0f1;
     display: flex;
-    justify-content: left; /* Căn giữa nội dung */
-    align-items: left;
-    text-align: left; /* Đảm bảo văn bản được căn giữa */
-}
-
-footer {
+    justify-content: center; /* Căn giữa nội dung */
+    align-items: center;
     text-align: center;
-    margin-top: 30px;
-    padding: 10px;
-    background-color: #34495e;
-    color: #ecf0f1;
-    border-radius: 4px;
-    font-size: 0.9em;
 }
 
 #result::before {
-    content: '🎯'; /* Icon kết quả */
+    content: '🎯'; /* Icon mục tiêu */
     margin-right: 10px;
+}
+
+/* Phần nhập thời gian ban đầu */
+.input-group input {
+    min-width: 200px; /* Thu nhỏ kích thước nhưng có độ rộng tối thiểu */
+    width: auto;
+    max-width: 100px; /* Giới hạn kích thước tối đa */
+    text-align: center; /* Căn giữa nội dung */
 }
 
 /* Chỉnh độ cao của danh sách chọn */
 select {
     height: 40px;
+    padding: 5px;
 }
 
 /* Nút xoá toàn bộ */
 #clear-storage {
-    background-color: #f39c12; /* Màu vàng cho nút xóa toàn bộ */
-    margin-top: 20px;
+    background-color: #f39c12; /* Màu cam */
+    margin-top: 10px;
 }
 
 #clear-storage:hover {
-    background-color: #e67e22;
+    background-color: #e67e22; /* Màu cam đậm khi hover */
 }
+
+/* Khoảng cách giữa các phần */
+.container h2, .container h3 {
+    color: #e74c3c; /* Màu đỏ cho các tiêu đề phụ */
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.container {
+    margin-bottom: 20px;
+}
+
+/* Nút thêm điểm trung gian */
+button.add-waypoint-button {
+    background-color: #1abc9c; /* Màu xanh lá */
+}
+
+button.add-waypoint-button:hover {
+    background-color: #16a085; /* Đậm màu khi hover */
+}
+
+button.add-waypoint-button::before {
+    content: '➕'; /* Icon thêm điểm */
+    margin-right: 5px;
+}
+
+/* Điểm trung gian */
+.waypoint-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Mỗi điểm trung gian cách nhau một khoảng */
+}
+
+.waypoint {
+    flex-grow: 1; /* Để ô chọn điểm trung gian chiếm không gian lớn nhất */
+    margin-right: 10px; /* Tạo khoảng cách giữa ô chọn và nút xóa */
+}
+
+.delete-waypoint {
+    background-color: #34cceb; /* Màu đỏ nổi bật cho nút xóa */
+    border: none;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.delete-waypoint:hover {
+    background-color: #ff1c1c; /* Thay đổi màu khi di chuột qua */
+}
+

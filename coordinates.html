@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-<!-- Phần thêm nút "Quay lại trang chủ" -->
-<a href="index.html">
-    <button>🏠 Quay lại trang chủ</button>
-</a>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Coordinate Calculator</h1>
+        <h1>Tính toán Khoảng cách và Thời gian</h1>
 
         <!-- Phần nhập tọa độ -->
         <div class="input-section">
@@ -39,6 +35,27 @@
         <!-- Danh sách tọa độ đã nhập -->
         <h3>Danh sách tọa độ</h3>
         <ul id="coordinate-list"></ul>
+
+        <!-- Phần nhập thời gian ban đầu -->
+<div class="input-section">
+    <h3>Nhập thời gian ban đầu</h3>
+    <div class="input-group">
+        <label for="start-hour">Giờ:</label>
+        <input type="number" id="start-hour" placeholder="Giờ" min="0" max="23" step="1">
+    </div>
+    <div class="input-group">
+        <label for="start-minute">Phút:</label>
+        <input type="number" id="start-minute" placeholder="Phút" min="0" max="59" step="1">
+    </div>
+    <div class="input-group">
+        <label for="start-second">Giây:</label>
+        <input type="number" id="start-second" placeholder="Giây" min="0" max="59" step="1">
+    </div>
+    <div class="input-group">
+        <label for="start-millisecond">Mili giây:</label>
+        <input type="number" id="start-millisecond" placeholder="Mili giây" min="0" max="999" step="1">
+    </div>
+</div>
 
         <!-- Phần tính toán tuyến đường -->
         <h3>Tính toán tuyến đường</h3>
@@ -71,8 +88,5 @@
     </div>
 
     <script src="coordinates.js"></script>
-	<footer>
-        <p>© 2024 Bản quyền thuộc về discord Rafine7262</p>
-    </footer>
 </body>
 </html>
